@@ -1,1 +1,341 @@
+<!doctype html>
+<html lang="es">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VittaPet - Tienda de Mascotas</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'DM Sans', sans-serif; }
+    .nav-link { transition: color 0.2s; }
+    .nav-link:hover { color: #00bcd4; }
+    .card-product { transition: transform 0.25s, box-shadow 0.25s; cursor: pointer; }
+    .card-product:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,0.15); }
+    .btn-primary { transition: background 0.2s, transform 0.15s; }
+    .btn-primary:hover { transform: scale(1.05); }
+    .btn-primary:active { transform: scale(0.95); }
+    .badge-new { background: #0066CC; }
+    .badge-available { background: #00bcd4; }
+    .cart-overlay { transition: opacity 0.3s; }
+    .cart-panel { transition: transform 0.3s; }
+    .cart-panel.open { transform: translateX(0); }
+    .section { display: none; }
+    .section.active { display: block; }
+    @keyframes float { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-10px); } }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-up { animation: fadeUp 0.6s ease forwards; }
+    .fade-up-d1 { animation-delay: 0.1s; opacity:0; }
+    .fade-up-d2 { animation-delay: 0.2s; opacity:0; }
+    .fade-up-d3 { animation-delay: 0.3s; opacity:0; }
+    .paw-bg { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ctext x='10' y='40' font-size='30' opacity='0.06'%3E🐾%3C/text%3E%3C/svg%3E"); }
+    .modal-overlay { transition: opacity 0.3s; }
+    .modal-content { transition: transform 0.3s, opacity 0.3s; }
+  </style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/resizing_sdk.js" type="text/javascript"></script>
+ </head>
+ <body data-template-id="__page-root" class="min-h-screen paw-bg">
+  <!-- Nav -->
+  <nav class="fixed top-0 w-full bg-white/95 backdrop-blur shadow-sm z-50">
+   <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+     <div class="flex items-center gap-2 cursor-pointer" onclick="navigate('home')">
+      <img data-template-id="nav-logo" class="canva-image w-9 h-9 rounded-full object-cover" loading="lazy">
+      <h1 data-template-id="brand-name" class="canva-text text-2xl font-bold"></h1>
+     </div>
+     <div class="hidden md:flex items-center gap-4 ml-6 text-sm font-medium">
+      <a class="nav-link cursor-pointer" onclick="navigate('home')">Inicio</a> <a class="nav-link cursor-pointer" onclick="navigate('about')">Quiénes Somos</a> <a class="nav-link cursor-pointer" onclick="navigate('catalog')">Catálogo</a> <a class="nav-link cursor-pointer" onclick="navigate('contact')">Contáctanos</a>
+     </div>
+    </div>
+    <div class="flex items-center gap-4">
+     <button onclick="toggleCart()" class="relative p-2 hover:bg-amber-50 rounded-full transition"> <i data-lucide="shopping-cart" style="width:22px;height:22px"></i> <span id="cart-badge" class="absolute -top-1 -right-1 bg-rose-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center hidden">0</span> </button> <button class="md:hidden p-2" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')"> <i data-lucide="menu" style="width:22px;height:22px"></i> </button>
+    </div>
+   </div>
+   <div id="mobile-menu" class="hidden md:hidden px-4 pb-3 space-y-2 text-sm font-medium">
+    <a class="block nav-link cursor-pointer" onclick="navigate('home');document.getElementById('mobile-menu').classList.add('hidden')">Inicio</a> <a class="block nav-link cursor-pointer" onclick="navigate('about');document.getElementById('mobile-menu').classList.add('hidden')">Quiénes Somos</a> <a class="block nav-link cursor-pointer" onclick="navigate('catalog');document.getElementById('mobile-menu').classList.add('hidden')">Catálogo</a> <a class="block nav-link cursor-pointer" onclick="navigate('contact');document.getElementById('mobile-menu').classList.add('hidden')">Contáctanos</a>
+   </div>
+  </nav><!-- Hero -->
+  <section id="sec-home" class="section active pt-16">
+   <div class="relative w-full" style="height:calc(72 * min(var(--vh,1vh),1vh))">
+    <img data-template-id="hero-img" class="canva-image w-full h-full object-cover" loading="lazy">
+    <div class="absolute inset-0 bg-gradient-to-r from-purple-900/70 via-pink-800/40 to-transparent flex items-center">
+     <div class="max-w-7xl mx-auto px-6 w-full">
+      <h2 data-template-id="hero-title" class="canva-text text-white text-4xl md:text-5xl font-bold mb-4 max-w-lg"></h2>
+      <p data-template-id="hero-sub" class="canva-text text-white/85 text-lg mb-6 max-w-md"></p><button data-template-id="hero-cta" class="canva-button btn-primary px-7 py-3 rounded-full font-semibold shadow-lg" onclick="navigate('catalog')"></button>
+     </div>
+    </div>
+   </div><!-- Benefits -->
+   <div class="max-w-5xl mx-auto px-4 py-16 grid md:grid-cols-3 gap-8 text-center">
+    <div class="fade-up fade-up-d1 bg-white rounded-2xl p-6 shadow-sm border-2 border-amber-100">
+     <div class="w-14 h-14 mx-auto mb-3 bg-blue-100 rounded-full flex items-center justify-center animate-float">
+      <i data-lucide="truck" style="color:#0066CC"></i>
+     </div>
+     <h3 data-template-id="benefit-1-title" class="canva-text font-semibold mb-1"></h3>
+     <p data-template-id="benefit-1-desc" class="canva-text text-sm text-gray-500"></p>
+    </div>
+    <div class="fade-up fade-up-d2 bg-white rounded-2xl p-6 shadow-sm border-2 border-emerald-100">
+     <div class="w-14 h-14 mx-auto mb-3 bg-emerald-100 rounded-full flex items-center justify-center animate-float" style="animation-delay:0.5s">
+      <i data-lucide="shield-check" style="color:#10b981"></i>
+     </div>
+     <h3 data-template-id="benefit-2-title" class="canva-text font-semibold mb-1"></h3>
+     <p data-template-id="benefit-2-desc" class="canva-text text-sm text-gray-500"></p>
+    </div>
+    <div class="fade-up fade-up-d3 bg-white rounded-2xl p-6 shadow-sm border-2 border-rose-100">
+     <div class="w-14 h-14 mx-auto mb-3 bg-rose-100 rounded-full flex items-center justify-center animate-float" style="animation-delay:1s">
+      <i data-lucide="heart" style="color:#f43f5e"></i>
+     </div>
+     <h3 data-template-id="benefit-3-title" class="canva-text font-semibold mb-1"></h3>
+     <p data-template-id="benefit-3-desc" class="canva-text text-sm text-gray-500"></p>
+    </div>
+   </div>
+  </section><!-- About -->
+  <section id="sec-about" class="section pt-24 pb-16">
+   <div class="max-w-5xl mx-auto px-4">
+    <h2 data-template-id="about-title" class="canva-text text-3xl font-bold text-center mb-8"></h2>
+    <p data-template-id="about-text" class="canva-text text-gray-600 leading-relaxed text-center max-w-2xl mx-auto mb-10"></p><!-- About grid with images -->
+    <div class="grid md:grid-cols-2 gap-8 mb-12">
+     <div class="rounded-2xl overflow-hidden shadow-lg">
+      <img data-template-id="about-team-img" class="canva-image w-full h-64 object-cover" loading="lazy">
+     </div>
+     <div class="flex flex-col justify-center">
+      <h3 data-template-id="about-team-title" class="canva-text font-bold text-xl mb-3"></h3>
+      <p data-template-id="about-team-text" class="canva-text text-gray-600 leading-relaxed"></p>
+     </div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-8 mb-12">
+     <div class="flex flex-col justify-center md:order-1">
+      <h3 data-template-id="about-quality-title" class="canva-text font-bold text-xl mb-3"></h3>
+      <p data-template-id="about-quality-text" class="canva-text text-gray-600 leading-relaxed"></p>
+     </div>
+     <div class="rounded-2xl overflow-hidden shadow-lg md:order-2">
+      <img data-template-id="about-warehouse-img" class="canva-image w-full h-64 object-cover" loading="lazy">
+     </div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-8 mb-10">
+     <div class="rounded-2xl overflow-hidden shadow-lg">
+      <img data-template-id="about-pets-img" class="canva-image w-full h-64 object-cover" loading="lazy">
+     </div>
+     <div class="flex flex-col justify-center">
+      <h3 data-template-id="about-mission-title" class="canva-text font-bold text-xl mb-3"></h3>
+      <p data-template-id="about-expansion" class="canva-text text-gray-600 leading-relaxed"></p>
+     </div>
+    </div>
+   </div>
+  </section><!-- Catalog -->
+  <section id="sec-catalog" class="section pt-24 pb-16">
+   <div class="max-w-7xl mx-auto px-4">
+    <h2 data-template-id="catalog-title" class="canva-text text-3xl font-bold text-center mb-8"></h2>
+    <div class="flex flex-col sm:flex-row gap-3 mb-8 max-w-xl mx-auto">
+     <input id="search-input" type="text" placeholder="Buscar productos..." class="flex-1 px-4 py-2 border-2 border-cyan-200 rounded-full focus:outline-none focus:ring-2 focus:ring-cyan-400" oninput="renderProducts()"> <select id="filter-select" class="px-4 py-2 border-2 border-cyan-200 rounded-full focus:outline-none focus:ring-2 focus:ring-cyan-400" onchange="renderProducts()"> <option value="all">Todos</option> <option value="perros">Perros</option> <option value="gatos">Gatos</option> <option value="ambos">Perros y Gatos</option> </select>
+    </div>
+    <div id="products-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+   </div>
+  </section><!-- Product Detail Modal -->
+  <div id="product-modal" class="fixed inset-0 z-[60] hidden">
+   <div class="modal-overlay absolute inset-0 bg-black/50" onclick="closeProductModal()"></div>
+   <div class="modal-content absolute inset-4 md:inset-12 lg:inset-20 bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row">
+    <button onclick="closeProductModal()" class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow hover:bg-gray-100"> <i data-lucide="x" style="width:20px;height:20px"></i> </button>
+    <div class="md:w-1/2 h-64 md:h-full bg-gray-50 flex items-center justify-center p-6">
+     <img id="modal-img" src="" alt="" class="max-w-full max-h-full object-contain rounded-xl">
+    </div>
+    <div class="md:w-1/2 p-6 md:p-10 flex flex-col justify-center overflow-y-auto">
+     <span id="modal-badge" class="inline-block text-xs text-white font-semibold px-3 py-1 rounded-full mb-4 w-fit"></span>
+     <h2 id="modal-name" class="text-2xl md:text-3xl font-bold text-gray-900 mb-4"></h2>
+     <p id="modal-desc" class="text-gray-600 leading-relaxed mb-6 text-base"></p>
+     <p id="modal-price" class="text-2xl font-bold text-purple-600 mb-6"></p><button id="modal-add-btn" class="btn-primary px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold rounded-full w-fit">Agregar al carrito</button>
+    </div>
+   </div>
+  </div><!-- Contact -->
+  <section id="sec-contact" class="section pt-24 pb-16">
+   <div class="max-w-2xl mx-auto px-4">
+    <h2 data-template-id="contact-title" class="canva-text text-3xl font-bold text-center mb-8"></h2>
+    <form id="contact-form" class="space-y-4 bg-white p-6 rounded-2xl shadow-sm border-2 border-cyan-100">
+     <div><label data-template-id="contact-name-label" for="c-name" class="canva-text block text-sm font-medium mb-1"></label><input id="c-name" type="text" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400" required>
+     </div>
+     <div><label data-template-id="contact-email-label" for="c-email" class="canva-text block text-sm font-medium mb-1"></label><input id="c-email" type="email" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400" required>
+     </div>
+     <div><label data-template-id="contact-msg-label" for="c-msg" class="canva-text block text-sm font-medium mb-1"></label><textarea id="c-msg" rows="4" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400" required></textarea>
+     </div><button data-template-id="contact-send-btn" type="submit" class="canva-button btn-primary w-full py-3 rounded-full font-semibold"></button>
+    </form>
+    <div class="text-center mt-6">
+     <a href="https://wa.me/50497223433?text=Hola%20VittaPet%2C%20tengo%20una%20consulta." target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-full transition shadow-lg"> <i data-lucide="message-circle" style="width:18px;height:18px"></i> <span data-template-id="wa-quick-btn" class="canva-text"></span> </a>
+    </div>
+    <div id="contact-success" class="hidden mt-4 p-4 bg-green-50 text-green-700 rounded-lg text-center font-medium">
+     ¡Mensaje enviado! Te contactaremos pronto. 🎉
+    </div>
+   </div>
+  </section><!-- Cart Sidebar -->
+  <div id="cart-overlay" class="cart-overlay fixed inset-0 bg-black/40 z-50 hidden opacity-0" onclick="toggleCart()"></div>
+  <div id="cart-panel" class="cart-panel fixed top-0 right-0 w-full max-w-md h-full bg-white z-50 shadow-2xl translate-x-full overflow-y-auto">
+   <div class="p-6">
+    <div class="flex items-center justify-between mb-6">
+     <h2 data-template-id="cart-title" class="canva-text text-xl font-bold"></h2><button onclick="toggleCart()" class="p-2 hover:bg-gray-100 rounded-full"><i data-lucide="x" style="width:20px;height:20px"></i></button>
+    </div>
+    <div id="cart-items" class="space-y-4"></div>
+    <div id="cart-empty" class="text-center text-gray-400 py-12">
+     <i data-lucide="shopping-bag" style="width:48px;height:48px;margin:0 auto 12px"></i>
+     <p>Tu carrito está vacío</p>
+    </div>
+    <div id="cart-footer" class="hidden border-t mt-6 pt-4 space-y-3">
+     <div class="flex justify-between font-bold text-lg"><span>Total:</span><span id="cart-total">L 0.00</span>
+     </div><button onclick="checkout()" class="btn-primary w-full py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-full flex items-center justify-center gap-2 transition shadow-lg"> <i data-lucide="message-circle" style="width:18px;height:18px"></i> Enviar pedido por WhatsApp </button>
+    </div>
+   </div>
+  </div><!-- Footer -->
+  <footer data-template-id="footer-section" class="canva-footer py-8">
+   <div class="max-w-7xl mx-auto px-4 flex flex-col items-center gap-3">
+    <img data-template-id="footer-logo" class="canva-image w-12 h-12 rounded-full object-cover" loading="lazy">
+    <p data-template-id="footer-text" class="canva-text text-center text-sm"></p>
+   </div>
+  </footer>
+  <script src="/_sdk/editing_sdk.js"></script>
+  <script>
+    const products = [
+      { id:1, name:"Alimento Balanceado para Perros", desc:"Nutrición completa para perros de todas las edades con proteínas de alta calidad. Formulado con ingredientes naturales seleccionados que promueven la salud digestiva, un pelaje brillante y energía sostenida durante todo el día.\n\nComponentes principales: Carne de pollo deshidratada (25%), arroz integral, avena, harina de pescado, grasas omega-3 y omega-6.\n\nIngredientes: Proteína cruda mín. 22%, grasa cruda 10%, fibra máx. 4%, ceniza máx. 8%. Enriquecido con vitaminas A, D3, E y minerales esenciales para fortalecer inmunidad y salud ósea.", price:450, img:"https://lh3.googleusercontent.com/d/1ycDnr1U4W1vlfzQoVv3uDgBbBWTn2UzA", category:"perros", badge:"Disponible" },
+      { id:2, name:"Snacks de Pollo para Perros", desc:"Bocados horneados con pollo real, ideales para entrenamiento y recompensas. Sin colorantes artificiales ni conservantes, perfectos para premiar a tu mascota de forma saludable.\n\nComponentes: 100% pechuga de pollo deshidratada, sin harinas ni rellenos.\n\nIngredientes: Proteína de pollo 85%, grasas naturales 8%, fibra 2%. Libre de gluten, maíz y soya. Horneado a baja temperatura para preservar nutrientes. Recomendado como golosina ocasional representando no más del 10% de la ingesta calórica diaria.", price:85, img:"https://lh3.googleusercontent.com/d/1vWvA_ei8QiFmXjiQfC2BaFxBC_sh8YCT", category:"perros", badge:"Nuevo" },
+      { id:3, name:"Sticks de Fresa y Crema con Pollo", desc:"Snacks innovadores que combinan proteína de pollo con fresa y crema. Una combinación única de sabores que encantará a tu perro mientras le aporta nutrientes esenciales.\n\nComponentes: Pollo deshidratado, crema natural, fresa liofilizada, almidón de patata.\n\nIngredientes: Proteína de pollo 70%, lácteos naturales 15%, fresa 5%, almidón 8%, antioxidantes naturales. Bajo en grasas. Ideal para perros mayores o con digestión sensible. Tamaño perfecto para diarios de entrenamiento y juego.", price:95, img:"https://lh3.googleusercontent.com/d/14YrUNV0DkkPUUt13alyLfXPudAvAVLtw", category:"perros", badge:"Nuevo" },
+      { id:4, name:"Alimento Premium para Gatos", desc:"Recetas gourmet con pescado y proteínas seleccionadas, libre de gluten. Diseñado para satisfacer los paladares más exigentes mientras cuida la salud renal y el peso ideal de tu gato.\n\nComponentes: Harina de salmón (30%), pollo deshidratado, aceite de pescado, taurina, minerales para salud urinaria.\n\nIngredientes: Proteína cruda mín. 38%, grasa cruda 12%, fibra máx. 3%, ceniza máx. 7%. Enriquecido con taurina (aminoácido esencial felino), vitaminas del complejo B y zinc para soporte inmunológico. Fórmula balanceada para mantener peso ideal.", price:380, img:"https://lh3.googleusercontent.com/d/1EFowNc9R_kflFJ889UtgqaOSdZUFqh5z", category:"gatos", badge:"Disponible" },
+      { id:5, name:"Snacks Dentales para Gatos", desc:"Bocados crujientes para limpieza dental con menta y extractos naturales. Ayudan a prevenir la acumulación de sarro y mantienen el aliento fresco de tu felino.\n\nComponentes: Fibra de caña de azúcar, pollo deshidratado, extracto de menta, alga marina.\n\nIngredientes: Proteína 15%, fibra 35%, grasas 5%. Textura abrasiva que actúa mecánicamente limpiando dientes y encías. Extracto de menta proporciona aliento fresco. Sin azúcares ni colorantes. Uso diario recomendado para gatos adultos.", price:75, img:"https://lh3.googleusercontent.com/d/1iLK2bCA6ypzat6pyIMFn630KTJ8A7sb5", category:"gatos", badge:"Disponible" },
+      { id:6, name:"Suplemento Multivitamínico", desc:"Tabletas masticables que fortalecen defensas, piel y pelaje. Fórmula veterinaria con vitaminas A, D, E y complejo B para el bienestar integral de perros y gatos.\n\nComponentes: Vitamina A 50,000 IU, vitamina D3 5,000 IU, vitamina E 100 IU, complejo B (B1, B2, B6, B12), zinc, selenio.\n\nIngredientes: Sabor a carne, celulosa microcristalina, estearato de magnesio. Dosis recomendada: 1 tableta por cada 10kg de peso corporal diariamente. Apoyo inmunológico especial durante cambios de estación o estrés. Seguro para cachorros y gatos jóvenes.", price:220, img:"https://lh3.googleusercontent.com/d/1P7GQM923heFoqkAUE0gyTLI1LN3SNIuR", category:"ambos", badge:"Disponible" },
+      { id:7, name:"Shampoo para Mascotas", desc:"Fórmula suave con ingredientes naturales para un pelaje brillante y aroma fresco. Ideal para pieles sensibles, libre de parabenos y sulfatos agresivos.\n\nComponentes: Aceite de coco virgen, aloe vera, extracto de avena, chamomila, manzanilla.\n\nIngredientes: pH equilibrado 6.5-7.0, espumante natural, proteínas de seda hidrolizadas. Libre de parabenos, sulfatos SLS, ftalatos. Dermatológicamente testado. Hidrata y nutre mientras limpia suavemente. Apto para baños frecuentes. Aroma natural duradero.", price:145, img:"https://lh3.googleusercontent.com/d/1X2YhpwsC3ZoBn5aKI3JjKtqRRfCBUwId", category:"ambos", badge:"Disponible" },
+      { id:8, name:"Desparasitante WormAway", desc:"Tabletas de amplio espectro para perros y cachorros, controla 4 tipos de parásitos intestinales. Fácil administración y resultados efectivos desde la primera dosis.\n\nComponentes: Principios activos contra Toxocara, Ancylostoma, Trichuris y Diphylidium. Excipientes de calidad farmacéutica.\n\nIngredientes: Levamisol 40mg, Pyrantel pamoate 30mg, Fenbendazol 20mg. Dosis: 1 tableta por cada 10kg peso. Eficacia demostrada en 48-72 horas. Seguro para cachorros desde 6 semanas. Recomendado cada 3 meses en perros adultos, mensual en cachorros.", price:180, img:"https://lh3.googleusercontent.com/d/1A7acearSY_Jsys6c7XXe90H0KcfpcbyF", category:"perros", badge:"Disponible" }
+    ];
 
+    function fmtPrice(n) { return 'L ' + n.toLocaleString('es-HN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    let cart = JSON.parse(localStorage.getItem('vittapet_cart') || '[]');
+
+    function navigate(section) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('sec-' + section).classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function renderProducts() {
+      const search = document.getElementById('search-input').value.toLowerCase();
+      const filter = document.getElementById('filter-select').value;
+      const grid = document.getElementById('products-grid');
+      const filtered = products.filter(p => {
+        const matchSearch = p.name.toLowerCase().includes(search) || p.desc.toLowerCase().includes(search);
+        const matchFilter = filter === 'all' || p.category === filter;
+        return matchSearch && matchFilter;
+      });
+      grid.innerHTML = filtered.map(p => `
+        <div class="card-product bg-white rounded-2xl overflow-hidden shadow-sm border-2 border-gray-100 hover:border-amber-200" onclick="openProductModal(${p.id})">
+          <div class="relative aspect-square bg-gray-50 flex items-center justify-center p-4">
+            <img src="${p.img}" alt="${p.name}" class="max-w-full max-h-full object-contain" loading="lazy">
+            <span class="absolute top-3 right-3 text-xs text-white font-semibold px-2.5 py-1 rounded-full ${p.badge==='Nuevo'?'badge-new':'badge-available'}">${p.badge}</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-sm mb-1 line-clamp-2">${p.name}</h3>
+            <p class="text-xs text-gray-500 mb-3 line-clamp-2">${p.desc}</p>
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-purple-600">${fmtPrice(p.price)}</span>
+              <button onclick="event.stopPropagation();addToCart(${p.id})" class="btn-primary px-3 py-1.5 bg-yellow-400 hover:bg-yellow-500 text-gray-900 text-xs font-semibold rounded-full">Agregar</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openProductModal(id) {
+      const p = products.find(pr => pr.id === id);
+      if (!p) return;
+      document.getElementById('modal-img').src = p.img;
+      document.getElementById('modal-img').alt = p.name;
+      document.getElementById('modal-name').textContent = p.name;
+      document.getElementById('modal-desc').textContent = p.desc;
+      document.getElementById('modal-price').textContent = fmtPrice(p.price);
+      const badge = document.getElementById('modal-badge');
+      badge.textContent = p.badge;
+      badge.className = 'inline-block text-xs text-white font-semibold px-3 py-1 rounded-full mb-4 w-fit ' + (p.badge === 'Nuevo' ? 'badge-new' : 'badge-available');
+      document.getElementById('modal-add-btn').onclick = () => { addToCart(p.id); closeProductModal(); };
+      document.getElementById('product-modal').classList.remove('hidden');
+    }
+
+    function closeProductModal() {
+      document.getElementById('product-modal').classList.add('hidden');
+    }
+
+    function addToCart(id) {
+      const existing = cart.find(i => i.id === id);
+      if (existing) { existing.qty++; } else { cart.push({ id, qty: 1 }); }
+      saveCart();
+    }
+    function removeFromCart(id) { cart = cart.filter(i => i.id !== id); saveCart(); }
+    function updateQty(id, delta) { const item = cart.find(i => i.id === id); if (item) { item.qty = Math.max(1, item.qty + delta); } saveCart(); }
+    function saveCart() { localStorage.setItem('vittapet_cart', JSON.stringify(cart)); updateCartUI(); }
+
+    function updateCartUI() {
+      const badge = document.getElementById('cart-badge');
+      const totalQty = cart.reduce((s, i) => s + i.qty, 0);
+      badge.textContent = totalQty;
+      badge.classList.toggle('hidden', totalQty === 0);
+      const container = document.getElementById('cart-items');
+      const empty = document.getElementById('cart-empty');
+      const footer = document.getElementById('cart-footer');
+      if (cart.length === 0) { container.innerHTML = ''; empty.classList.remove('hidden'); footer.classList.add('hidden'); return; }
+      empty.classList.add('hidden'); footer.classList.remove('hidden');
+      container.innerHTML = cart.map(item => {
+        const p = products.find(pr => pr.id === item.id);
+        return `<div class="flex gap-3 items-center bg-cyan-50 rounded-xl p-3">
+          <img src="${p.img}" class="w-14 h-14 rounded-xl object-contain bg-white" alt="${p.name}">
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">${p.name}</p>
+            <p class="text-xs text-gray-500">${fmtPrice(p.price)}</p>
+            <div class="flex items-center gap-2 mt-1">
+              <button onclick="updateQty(${p.id},-1)" class="w-6 h-6 bg-gray-200 rounded-full text-sm flex items-center justify-center hover:bg-gray-300">−</button>
+              <span class="text-sm font-medium">${item.qty}</span>
+              <button onclick="updateQty(${p.id},1)" class="w-6 h-6 bg-gray-200 rounded-full text-sm flex items-center justify-center hover:bg-gray-300">+</button>
+            </div>
+          </div>
+          <button onclick="removeFromCart(${p.id})" class="text-red-400 hover:text-red-600 p-1"><i data-lucide="trash-2" style="width:16px;height:16px"></i></button>
+        </div>`;
+      }).join('');
+      lucide.createIcons();
+      const total = cart.reduce((s, i) => { const p = products.find(pr => pr.id === i.id); return s + p.price * i.qty; }, 0);
+      document.getElementById('cart-total').textContent = fmtPrice(total);
+    }
+
+    function toggleCart() {
+      const overlay = document.getElementById('cart-overlay');
+      const panel = document.getElementById('cart-panel');
+      const isOpen = panel.classList.contains('open');
+      if (isOpen) { panel.classList.remove('open'); overlay.classList.add('hidden'); overlay.style.opacity='0'; }
+      else { overlay.classList.remove('hidden'); setTimeout(()=>overlay.style.opacity='1',10); panel.classList.add('open'); }
+    }
+
+    function checkout() {
+      if (cart.length === 0) return;
+      let msg = 'Hola VittaPet,\n\nMe gustaría solicitar cotización/reserva de los siguientes productos:\n\n';
+      let total = 0;
+      cart.forEach(item => {
+        const p = products.find(pr => pr.id === item.id);
+        const sub = p.price * item.qty;
+        total += sub;
+        msg += `• ${p.name} — Cant: ${item.qty} — ${fmtPrice(sub)}\n`;
+      });
+      msg += `\nTotal referencial: ${fmtPrice(total)}\n\nMe confirmas disponibilidad y proximos pasos por favor. Muchas gracias.`;
+      window.open('https://wa.me/50497223433?text=' + encodeURIComponent(msg), '_blank');
+    }
+
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('c-name').value || 'Cliente';
+      const email = document.getElementById('c-email').value || '';
+      const contactMsg = document.getElementById('c-msg').value || '';
+      const msg = `Hola VittaPet,\n\nNombre: ${name}\nCorreo: ${email}\n\nMensaje:\n${contactMsg}`;
+      window.open('https://wa.me/50497223433?text=' + encodeURIComponent(msg), '_blank');
+      this.classList.add('hidden');
+      document.getElementById('contact-success').classList.remove('hidden');
+      setTimeout(() => { this.classList.remove('hidden'); this.reset(); document.getElementById('contact-success').classList.add('hidden'); }, 3000);
+    });
+
+    renderProducts();
+    updateCartUI();
+    lucide.createIcons();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ff9c7f84be525dc',t:'MTc3OTQzMTUyMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
